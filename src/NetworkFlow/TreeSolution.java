@@ -62,7 +62,7 @@ public class TreeSolution {
 		depthArray[kIndex] = 0;
 
 		this.thread = new int[numberOfNodes + 1];
-		thread[kIndex] = nodes[0].getIndex(); // richtig initialisiert?
+		thread[kIndex] = 1; // richtig initialisiert?
 
 		this.fairPrices = new double[numberOfNodes + 1];
 		fairPrices[kIndex] = 0; // this is the one that choose arbritrariliy (n
