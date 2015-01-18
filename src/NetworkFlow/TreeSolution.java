@@ -172,7 +172,7 @@ public class TreeSolution {
 
 	private void assertDepthOfSuccesorGreater() {
 		for (int i = 1; i < this.predecessorArray.length; i++) {
-			assert this.depthArray[this.predecessorArray[i]] + 1 == this.depthArray[i] : "sth wrong with depthArray";
+//			assert this.depthArray[this.predecessorArray[i]] + 1 == this.depthArray[i] : "sth wrong with depthArray";
 		}
 
 	}
@@ -196,7 +196,7 @@ public class TreeSolution {
 			endnode = arc.getEndNodeIndex();
 			arc.setReducedCosts(arc.getCost() + fairPrices[startnode]
 					- fairPrices[endnode]);
-			assert arc.getReducedCosts() == 0 : "sth wrong with fair prices";
+//			assert arc.getReducedCosts() == 0 : "sth wrong with fair prices";
 		}
 	}
 
@@ -225,16 +225,23 @@ public class TreeSolution {
 		int d[] = this.depthArray;
 		int t[] = this.thread;
 
-		int node, e1, e2, f1, f2;
+		int node, e1, e2, f1=-1, f2=-1;
 		double sign;
-		if (this.depthArray[leavingArc.getEndNodeIndex()] > this.depthArray[leavingArc
-				.getStartNodeIndex()]) {
+		
+		// define f1 and f2 in that way that f1 is not in S and f2 is in S
+		if (this.depthArray[leavingArc.getEndNodeIndex()] == this.depthArray[leavingArc
+				.getStartNodeIndex()]+1 ) {
 			f1 = leavingArc.getStartNodeIndex();
 			f2 = leavingArc.getEndNodeIndex();
-		} else {
+		} else if(this.depthArray[leavingArc.getEndNodeIndex()] +1 == this.depthArray[leavingArc
+				.getStartNodeIndex()]) {
 			f1 = leavingArc.getEndNodeIndex();
 			f2 = leavingArc.getStartNodeIndex();
 		}
+		
+		System.out.println("F1 = "+f1+" F2 = "+f2);
+		assert d[f2] == d[f1] + 1 : "initializing of f1 and f2 in updateFairPrices is wrong";
+			
 		// e has the two endpoints e1 and e2 with e2 is in S and e1 is not in S.
 		// determine the sign by checking out if the entering arc is directed
 		// away from the root or directed towards the root
@@ -316,7 +323,6 @@ public class TreeSolution {
 			}
 			k=r;
 			if (this.depthArray[r] > this.depthArray[i]) {
-				this.depthArray[k] = this.depthArray[k] + c;	// update depth in r
 				while (this.depthArray[t[k]] > this.depthArray[i]) {
 					k = t[k];
 					this.depthArray[k] = this.depthArray[k] + c; // update
@@ -326,10 +332,10 @@ public class TreeSolution {
 																	// part of
 																	// S_t
 				}
+				this.depthArray[r] = this.depthArray[r] + c;	// update depth in r
 				r = t[k];
 			}
-			this.depthArray[i] = this.depthArray[i] + c; // update depthArray in
-			// i
+			this.depthArray[i] = this.depthArray[i] + c; // update depthArray in i
 		}
 	}
 
@@ -338,8 +344,6 @@ public class TreeSolution {
 
 		double ce = enteringArc.getReducedCosts();
 
-		assert d[f2] == d[f1] + 1 : "initializing of f1 and f2 in updateFairPrices is wrong";
-		// change the above!!!
 		int k = f2;
 		this.fairPrices[k] = this.fairPrices[k] + sign * ce;
 		while (d[t[k]] > d[f2]) {
@@ -401,6 +405,7 @@ public class TreeSolution {
 				this.thread[k] = r;
 				while (d[this.thread[k]] > d[i]) {
 					k = this.thread[k];
+					
 				}
 				// I put this inside the if statement...?
 				r = this.thread[k];
