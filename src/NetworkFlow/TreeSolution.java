@@ -172,7 +172,8 @@ public class TreeSolution {
 
 	private void assertDepthOfSuccesorGreater() {
 		for (int i = 1; i < this.predecessorArray.length; i++) {
-//			assert this.depthArray[this.predecessorArray[i]] + 1 == this.depthArray[i] : "sth wrong with depthArray";
+			 assert this.depthArray[this.predecessorArray[i]] + 1 ==
+			 this.depthArray[i] : "sth wrong with depthArray";
 		}
 
 	}
@@ -196,7 +197,7 @@ public class TreeSolution {
 			endnode = arc.getEndNodeIndex();
 			arc.setReducedCosts(arc.getCost() + fairPrices[startnode]
 					- fairPrices[endnode]);
-//			assert arc.getReducedCosts() == 0 : "sth wrong with fair prices";
+			 assert arc.getReducedCosts() == 0 : "sth wrong with fair prices";
 		}
 	}
 
@@ -225,23 +226,22 @@ public class TreeSolution {
 		int d[] = this.depthArray;
 		int t[] = this.thread;
 
-		int node, e1, e2, f1=-1, f2=-1;
+		int node, e1, e2, f1 = -1, f2 = -1;
 		double sign;
-		
+
 		// define f1 and f2 in that way that f1 is not in S and f2 is in S
 		if (this.depthArray[leavingArc.getEndNodeIndex()] == this.depthArray[leavingArc
-				.getStartNodeIndex()]+1 ) {
+				.getStartNodeIndex()] + 1) {
 			f1 = leavingArc.getStartNodeIndex();
 			f2 = leavingArc.getEndNodeIndex();
-		} else if(this.depthArray[leavingArc.getEndNodeIndex()] +1 == this.depthArray[leavingArc
+		} else if (this.depthArray[leavingArc.getEndNodeIndex()] + 1 == this.depthArray[leavingArc
 				.getStartNodeIndex()]) {
 			f1 = leavingArc.getEndNodeIndex();
 			f2 = leavingArc.getStartNodeIndex();
 		}
-		
-		System.out.println("F1 = "+f1+" F2 = "+f2);
+
 		assert d[f2] == d[f1] + 1 : "initializing of f1 and f2 in updateFairPrices is wrong";
-			
+
 		// e has the two endpoints e1 and e2 with e2 is in S and e1 is not in S.
 		// determine the sign by checking out if the entering arc is directed
 		// away from the root or directed towards the root
@@ -264,8 +264,8 @@ public class TreeSolution {
 
 		System.out.println("updateFairPrices");
 		updateFairPrices(t, d, enteringArc, leavingArc, sign, e1, e2, f1, f2);
-		System.out.println("updateDepth");
-		updateDepth(t, p, enteringArc, leavingArc, e1, e2, f1, f2);
+//		System.out.println("updateDepth");
+//		updateDepth(t, p, enteringArc, leavingArc, e1, e2, f1, f2);
 		System.out.println("updateThread");
 		updateThread(d, p, enteringArc, leavingArc, e1, e2, f1, f2);
 		System.out.println("updatePred");
@@ -303,8 +303,8 @@ public class TreeSolution {
 															// S1 except for v1
 		}
 		r = t[k];
-		this.depthArray[i] = this.depthArray[i] + c; // update depthArray in i (66
-														// = v1 = e2)
+		this.depthArray[i] = this.depthArray[i] + c; // update depthArray in i
+														// (= v1 = e2)
 		while (i != f2) {
 			// climb up one step the pivot stem and update depth in each S_i
 			j = i;
@@ -321,7 +321,7 @@ public class TreeSolution {
 																// the left part
 																// of S_t
 			}
-			k=r;
+			k = r;
 			if (this.depthArray[r] > this.depthArray[i]) {
 				while (this.depthArray[t[k]] > this.depthArray[i]) {
 					k = t[k];
@@ -332,15 +332,17 @@ public class TreeSolution {
 																	// part of
 																	// S_t
 				}
-				this.depthArray[r] = this.depthArray[r] + c;	// update depth in r
+				this.depthArray[r] = this.depthArray[r] + c; // update depth in
+																// r
 				r = t[k];
 			}
-			this.depthArray[i] = this.depthArray[i] + c; // update depthArray in i
+			this.depthArray[i] = this.depthArray[i] + c; // update depthArray in
+															// i
 		}
 	}
 
-	private void updateFairPrices(int[] t, int[] d,
-			Arc enteringArc, Arc leavingArc, double sign, int e1, int e2, int f1, int f2) {
+	private void updateFairPrices(int[] t, int[] d, Arc enteringArc,
+			Arc leavingArc, double sign, int e1, int e2, int f1, int f2) {
 
 		double ce = enteringArc.getReducedCosts();
 
@@ -368,6 +370,8 @@ public class TreeSolution {
 			return;
 		int a, b, i, j, k, r;
 
+		int c = this.depthArray[e1] - this.depthArray[e2] + 1;
+
 		// 1. initialize
 		a = f1;
 		while (this.thread[a] != f2) {
@@ -378,11 +382,14 @@ public class TreeSolution {
 
 		// 2. finding the last node k in S_1 and initialize the value of r
 		k = i;
-		while (d[this.thread[k]] > d[i]) {
+		while (this.depthArray[this.thread[k]] > this.depthArray[i]) {
 			k = this.thread[k];
+			this.depthArray[k] = this.depthArray[k] + c; // update depthArray in S1 except for v1
 		}
 		r = this.thread[k];
-
+		
+		this.depthArray[i] = this.depthArray[i] + c; // update depthArray in i (= v1 = e2)
+		
 		// 3. if we are at the end of S* (i.e. being at the last element
 		// of the thread-Array within the subtree with root f2 -> i == f2 ),
 		// remove S and insert S*
@@ -391,25 +398,30 @@ public class TreeSolution {
 			j = i;
 			i = p[i];
 			this.thread[k] = i;
-
+			
+			// update c (the constant used to update depthArray)
+			c = c + 2;
+			
 			// 5. find the last node k in the left part of S_t
 			k = i;
 			while (this.thread[k] != j) {
 				k = this.thread[k];
+				this.depthArray[k] = this.depthArray[k] + c; 
 			}
 
 			// 6. if the right part of S_t is not empty we update thread(k) and
 			// search the last node k in S_t
 			// At the end we update r.
-			if (d[r] > d[i]) {
+			if (this.depthArray[r] > this.depthArray[i]) {
 				this.thread[k] = r;
-				while (d[this.thread[k]] > d[i]) {
+				while (this.depthArray[this.thread[k]] > this.depthArray[i]) {
 					k = this.thread[k];
-					
+					this.depthArray[k] = this.depthArray[k] + c; // update depthArray in the right part of S_t
 				}
 				// I put this inside the if statement...?
 				r = this.thread[k];
 			}
+			this.depthArray[i] = this.depthArray[i] + c; 
 		}
 		// this.predecessorArray[i] = pred;
 		// execution of 3.
