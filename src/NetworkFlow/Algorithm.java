@@ -18,8 +18,6 @@ public class Algorithm {
 				++numberOfITeration;
 //				System.out.println(tree.numberOfIterations);
 //				if(numberOfITeration==8) {
-					System.out.println("GraphViz string");
-					System.out.println(tree.graphvizStringTree());
 //				}
 					System.out.println("\n\n\n\n\n iteration:");
 					System.out.println(numberOfITeration);

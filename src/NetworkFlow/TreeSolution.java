@@ -172,8 +172,7 @@ public class TreeSolution {
 
 	private void assertDepthOfSuccesorGreater() {
 		for (int i = 1; i < this.predecessorArray.length; i++) {
-			 assert this.depthArray[this.predecessorArray[i]] + 1 ==
-			 this.depthArray[i] : "sth wrong with depthArray";
+			assert this.depthArray[this.predecessorArray[i]] + 1 == this.depthArray[i] : "sth wrong with depthArray";
 		}
 
 	}
@@ -197,7 +196,7 @@ public class TreeSolution {
 			endnode = arc.getEndNodeIndex();
 			arc.setReducedCosts(arc.getCost() + fairPrices[startnode]
 					- fairPrices[endnode]);
-			 assert arc.getReducedCosts() == 0 : "sth wrong with fair prices";
+			assert arc.getReducedCosts() == 0 : "sth wrong with fair prices";
 		}
 	}
 
@@ -264,8 +263,8 @@ public class TreeSolution {
 
 		System.out.println("updateFairPrices");
 		updateFairPrices(t, d, enteringArc, leavingArc, sign, e1, e2, f1, f2);
-//		System.out.println("updateDepth");
-//		updateDepth(t, p, enteringArc, leavingArc, e1, e2, f1, f2);
+		// System.out.println("updateDepth");
+		// updateDepth(t, p, enteringArc, leavingArc, e1, e2, f1, f2);
 		System.out.println("updateThread");
 		updateThread(d, p, enteringArc, leavingArc, e1, e2, f1, f2);
 		System.out.println("updatePred");
@@ -384,12 +383,14 @@ public class TreeSolution {
 		k = i;
 		while (this.depthArray[this.thread[k]] > this.depthArray[i]) {
 			k = this.thread[k];
-			this.depthArray[k] = this.depthArray[k] + c; // update depthArray in S1 except for v1
+			this.depthArray[k] = this.depthArray[k] + c; // update depthArray in
+															// S1 except for v1
 		}
 		r = this.thread[k];
-		
-		this.depthArray[i] = this.depthArray[i] + c; // update depthArray in i (= v1 = e2)
-		
+
+		this.depthArray[i] = this.depthArray[i] + c; // update depthArray in i
+														// (= v1 = e2)
+
 		// 3. if we are at the end of S* (i.e. being at the last element
 		// of the thread-Array within the subtree with root f2 -> i == f2 ),
 		// remove S and insert S*
@@ -398,15 +399,15 @@ public class TreeSolution {
 			j = i;
 			i = p[i];
 			this.thread[k] = i;
-			
+
 			// update c (the constant used to update depthArray)
 			c = c + 2;
-			
+
 			// 5. find the last node k in the left part of S_t
 			k = i;
 			while (this.thread[k] != j) {
 				k = this.thread[k];
-				this.depthArray[k] = this.depthArray[k] + c; 
+				this.depthArray[k] = this.depthArray[k] + c;
 			}
 
 			// 6. if the right part of S_t is not empty we update thread(k) and
@@ -416,12 +417,17 @@ public class TreeSolution {
 				this.thread[k] = r;
 				while (this.depthArray[this.thread[k]] > this.depthArray[i]) {
 					k = this.thread[k];
-					this.depthArray[k] = this.depthArray[k] + c; // update depthArray in the right part of S_t
+					this.depthArray[k] = this.depthArray[k] + c; // update
+																	// depthArray
+																	// in the
+																	// right
+																	// part of
+																	// S_t
 				}
 				// I put this inside the if statement...?
 				r = this.thread[k];
 			}
-			this.depthArray[i] = this.depthArray[i] + c; 
+			this.depthArray[i] = this.depthArray[i] + c;
 		}
 		// this.predecessorArray[i] = pred;
 		// execution of 3.
@@ -558,29 +564,37 @@ public class TreeSolution {
 
 	}
 
+	/**
+	 * determines the possible flow change on the arc u and Pu depending on its direction
+	 * @param u
+	 * @param Pu
+	 * @param uWasStart Says whether u was the startnode of the arc we analyzed before or not
+	 * @param forwardBefore Says whether the arc which we analyzed before was a forward arc or not
+	 * @return
+	 */
 	private FlowFinderObject getPossibleFlowChange(int u, int Pu,
 			boolean uWasStart, boolean forwardBefore) {
 		Arc leavingArc = Tree.getEdgeInTree(u, Pu);
-		boolean sameDirection;
+		boolean sameDirection;	// says whether the arc between u and Pu and the arc before are in the same direction
 		if (leavingArc.getStartNodeIndex() == u) {
-			// <--u-->Pu
+			// <--u-->Pu	u is the startnode of the arc (u,Pu) and was the startnode of the arc before
 			if (uWasStart)
 				sameDirection = false;
-			// -->u-->Pu
+			// -->u-->Pu	u is the startnode of the arc (u,Pu) and was not the startnode of the arc before
 			else
 				sameDirection = true;
 		}
 		// u is end node
 		else {
-			// <--u<--Pu
+			// <--u<--Pu	u is not the startnode of the arc (u,Pu) and was the startnode of the arc before
 			if (uWasStart)
 				sameDirection = true;
-			// -->u<--Pu
+			// -->u<--Pu	u is not the startnode of the arc (u,Pu) and was not the startnode of the arc before
 			else
 				sameDirection = false;
 		}
 		// the edge examined before and this edge BOTH belong to either F or B
-		// (forward edges or backwar edges)
+		// (F = forward edges or B = backward edges)
 		if (sameDirection) {
 			// both edges belong to F
 			if (forwardBefore)
@@ -592,21 +606,22 @@ public class TreeSolution {
 						leavingArc.getFlow() - leavingArc.getLowerLimit());
 		}
 		// edges belong to different partitions F or B
-		else
-		// the edge examined before was a forward edge --> this one is a
-		// backward edge
-		if (forwardBefore)
-			return new FlowFinderObject(leavingArc, false, leavingArc.getFlow()
-					- leavingArc.getLowerLimit());
-		// the other way round
-		else
-			return new FlowFinderObject(leavingArc, true,
-					leavingArc.getUpperLimit() - leavingArc.getFlow());
+		else {
+			// the edge examined before was a forward edge --> this one is a
+			// backward edge
+			if (forwardBefore)
+				return new FlowFinderObject(leavingArc, false,
+						leavingArc.getFlow() - leavingArc.getLowerLimit());
+			// the other way round
+			else
+				return new FlowFinderObject(leavingArc, true,
+						leavingArc.getUpperLimit() - leavingArc.getFlow());
+		}
 	}
 
 	/**
 	 * this is an inner class, as such it has access to all class variables and
-	 * methods of the outer class )even if they are private) it encapsulates the
+	 * methods of the outer class (even if they are private) it encapsulates the
 	 * entering arc finding process Usage: create and EnteringArcFinder class
 	 * instance and use the getEnteringArc method there are 2 constructors so
 	 * far, one without arguments that uses a very simple pivoting rule and one
@@ -831,6 +846,12 @@ public class TreeSolution {
 
 	}
 
+	/**
+	 * changes the flow on the cycle and find a leaving arc in meantime
+	 * @param cycle
+	 * @param epsilon
+	 * @return
+	 */
 	private Arc changeFlowFindLeaving(LinkedList<FlowFinderObject> cycle,
 			double epsilon) {
 		Iterator<FlowFinderObject> iterator = cycle.iterator();
@@ -839,18 +860,27 @@ public class TreeSolution {
 		while (iterator.hasNext()) {
 			flowFinder = iterator.next();
 			double sign = 1;
+			
 			if (!flowFinder.forwardEdge)
 				sign = -1;
+			
+			// change the flow on the arc (subtract if it is a backward arc and add if it is a forward arc
 			flowFinder.leavingArc.setFlow(flowFinder.leavingArc.getFlow()
 					+ sign * epsilon);
+			
 			assert flowFinder.leavingArc.getFlow() <= flowFinder.leavingArc
 					.getUpperLimit() : "flow was increased above upper limit!";
 			assert flowFinder.leavingArc.getFlow() >= flowFinder.leavingArc
 					.getLowerLimit() : "flow was decreased under lower limit!";
+					
 			if (flowFinder.forwardEdge) {
+				
+				// if we add a flow it could be an arc that reaches its upper limit
 				if (flowFinder.leavingArc.getFlow() == flowFinder.leavingArc
 						.getUpperLimit())
 					leavingArc = flowFinder.leavingArc;
+				
+				// if we subtract a flow it could be an arc that reaches its lower limit
 			} else if (flowFinder.leavingArc.getFlow() == flowFinder.leavingArc
 					.getLowerLimit())
 				leavingArc = flowFinder.leavingArc;
